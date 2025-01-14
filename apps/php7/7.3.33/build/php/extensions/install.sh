@@ -15,7 +15,7 @@ echo
 
 
 if [ "${PHP_EXTENSIONS}" != "" ]; then
-    apk --update add --no-cache --virtual .build-deps autoconf g++ libtool make curl-dev gettext-dev linux-headers
+    apk --update add --no-cache --virtual .build-deps autoconf g++ libtool make curl-dev gettext-dev linux-headers git
 fi
 
 
@@ -85,7 +85,49 @@ fi
 
 if [[ -z "${EXTENSIONS##*,sourceguardian,*}" ]]; then
     echo "---------- Install sourceguardian ----------"
+    apk add eudev-libs
 	  install-php-extensions sourceguardian
+fi
+
+if [[ -z "${EXTENSIONS##*,ssh2,*}" ]]; then
+    echo "---------- Install ssh2 ----------"
+	  install-php-extensions ssh2
+fi
+
+if [[ -z "${EXTENSIONS##*,maxminddb,*}" ]]; then
+    echo "---------- Install maxminddb ----------"
+	  install-php-extensions maxminddb
+fi
+
+if [[ -z "${EXTENSIONS##*,zstd,*}" ]]; then
+    echo "---------- Install zstd ----------"
+	  install-php-extensions zstd
+fi
+
+if [[ -z "${EXTENSIONS##*,grpc,*}" ]]; then
+    echo "---------- Install grpc ----------"
+	  install-php-extensions grpc
+	  docker-php-ext-enable grpc
+fi
+
+if [[ -z "${EXTENSIONS##*,ftp,*}" ]]; then
+    echo "---------- Install ftp ----------"
+	  install-php-extensions ftp
+fi
+
+if [[ -z "${EXTENSIONS##*,snuffleupagus,*}" ]]; then
+    echo "---------- Install snuffleupagus ----------"
+	  install-php-extensions snuffleupagus
+fi
+
+if [[ -z "${EXTENSIONS##*,pdo_oci,*}" ]]; then
+    echo "---------- Install pdo_oci ----------"
+	 install-php-extensions  pdo_oci
+fi
+
+if [[ -z "${EXTENSIONS##*,oci8,*}" ]]; then
+    echo "---------- Install oci8 ----------"
+   install-php-extensions oci8
 fi
 # end
 
@@ -176,11 +218,6 @@ if [[ -z "${EXTENSIONS##*,pdo_dblib,*}" ]]; then
 	docker-php-ext-install ${MC} pdo_dblib
 fi
 
-if [[ -z "${EXTENSIONS##*,pdo_oci,*}" ]]; then
-    echo "---------- Install pdo_oci ----------"
-	docker-php-ext-install ${MC} pdo_oci
-fi
-
 if [[ -z "${EXTENSIONS##*,pdo_odbc,*}" ]]; then
     echo "---------- Install pdo_odbc ----------"
 	docker-php-ext-install ${MC} pdo_odbc
@@ -196,11 +233,6 @@ if [[ -z "${EXTENSIONS##*,pgsql,*}" ]]; then
     echo "---------- Install pgsql ----------"
     apk --no-cache add postgresql-dev \
     && docker-php-ext-install ${MC} pgsql
-fi
-
-if [[ -z "${EXTENSIONS##*,oci8,*}" ]]; then
-    echo "---------- Install oci8 ----------"
-	docker-php-ext-install ${MC} oci8
 fi
 
 if [[ -z "${EXTENSIONS##*,odbc,*}" ]]; then
@@ -394,18 +426,6 @@ if [[ -z "${EXTENSIONS##*,igbinary,*}" ]]; then
     docker-php-ext-enable igbinary
 fi
 
-
-if [[ -z "${EXTENSIONS##*,ssh2,*}" ]]; then
-    isPhpVersionGreaterOrEqual 7 0
-    if [[ "$?" = "1" ]]; then
-        echo "---------- Install ssh2 ----------"
-        printf "\n" | apk add libssh2-dev
-        pecl install ssh2-1.1.2
-        docker-php-ext-enable ssh2
-    else
-        echo "ssh2 requires PHP >= 7.0.0, installed version is ${PHP_VERSION}"
-    fi
-fi
 
 if [[ -z "${EXTENSIONS##*,protobuf,*}" ]]; then
     isPhpVersionGreaterOrEqual 7 0
